@@ -2,6 +2,7 @@ from datetime import timedelta, datetime
 
 import pandas as pd
 import numpy as np
+import json
 
 from matplotlib.figure import Figure
 import matplotlib.gridspec as gridspec
@@ -11,33 +12,28 @@ import seaborn as sns
 def generate_summary(filename):
     """Function to plot summary of game from filename."""
 
-    df = pd.read_csv(filename).drop('Unnamed: 0', axis=1)
+    # read from file
+    read_data = {}
+    with open(filename) as json_file:
+        read_data = json.load(json_file)
+
+    players = read_data['players']
+    transitions = read_data['transitions']
+    df = pd.DataFrame({
+        'Name': [list(transition.keys())[0] for transition in transitions],
+        'Interval': [list(transition.values())[0] for transition in transitions]
+    })
+
     total_duration_seconds = df['Interval'].sum()
 
-    player_names = df['Name'].unique()
     player_colors = {name: color for name, color in zip(
-        player_names, sns.color_palette('Pastel1')[:len(player_names)])}
+        players, sns.color_palette('Pastel1')[:len(players)])}
 
-    crowns_claimed = df.drop(index=0).groupby('Name').count().rename(
-        {'Interval': 'Claimed'}, axis=1).sort_values('Claimed', ascending=False)
-    total_time_king = df.groupby('Name').sum().rename(
-        {'Interval': 'Duration'}, axis=1).sort_values('Duration', ascending=False)
-    mean_reign_time = df.groupby('Name').mean().rename(
-        {'Interval': 'Duration'}, axis=1).sort_values('Duration', ascending=False)
-
-    df['interval_perc'] = df['Interval'].apply(
-        lambda x: int(np.ceil(x/total_duration_seconds * 100)))
-
-    graph_vector = []
-
-    for _, transition in df.iterrows():
-        graph_vector.extend(
-            transition.Name for i in range(transition.interval_perc))
-
-    print('Game duration: %s ' %
-          str(timedelta(seconds=int(total_duration_seconds))))
-    print('First king: %s | Last king: %s ' %
-          (df.iloc[0]['Name'], df.iloc[-1]['Name']))
+    crowns_claimed = get_crowns_claimed(df, players)
+    total_time_king = get_total_time_king(df, players)
+    reign_time = get_reign_time(df, players)
+    graph_vector = get_crown_transition_graph(
+        df, players, total_duration_seconds)
 
     fig = Figure(tight_layout=True, figsize=(10, 6))
     gs = gridspec.GridSpec(2, 3)
@@ -50,11 +46,11 @@ def generate_summary(filename):
 
     # Mean Reign time
     ax = fig.add_subplot(gs[0, 1])
-    sns.barplot(x=mean_reign_time.index, y=mean_reign_time.Duration,
+    sns.boxplot(reign_time, x='Name', y='Interval',
                 palette=player_colors, ax=ax)
     ax.set_xlabel('')
     ax.set_ylabel('Seconds')
-    ax.set_title('Mean reign time')
+    ax.set_title('Reign time')
 
     # Crowns claimed
     ax = fig.add_subplot(gs[0, 2])
@@ -76,18 +72,74 @@ def generate_summary(filename):
 
     fig.suptitle(
         'Game Summary %s\nDuration: %s\n First: %s | Last: %s' % (
-        game_date,
-        str(timedelta(seconds=int(total_duration_seconds))),
-        df.iloc[0]['Name'],
-        df.iloc[-1]['Name']),
+            game_date,
+            timedelta(seconds=int(total_duration_seconds)),
+            df.iloc[0]['Name'],
+            df.iloc[-1]['Name']),
     )
 
     return fig
 
 
+def get_crowns_claimed(df, players):
+    first_king = df.iloc[0]['Name']
+
+    crowns_claimed = df.groupby('Name').count().rename(
+        {'Interval': 'Claimed'}, axis=1).sort_values('Claimed', ascending=False)
+    crowns_claimed.loc[first_king]['Claimed'] -= 1
+
+    # include other players
+    if len(crowns_claimed) < len(players):
+        for player in players:
+            if player not in crowns_claimed.index:
+                crowns_claimed = pd.concat(
+                    [crowns_claimed, pd.DataFrame({'Claimed': 0}, index=[player])])
+
+    return crowns_claimed
+
+
+def get_total_time_king(df, players):
+    total_time_king = df.groupby('Name').sum().rename(
+        {'Interval': 'Duration'}, axis=1).sort_values('Duration', ascending=False)
+
+    # include other players
+    if len(total_time_king) < len(players):
+        for player in players:
+            if player not in total_time_king.index:
+                total_time_king = pd.concat(
+                    [total_time_king, pd.DataFrame({'Duration': 0}, index=[player])])
+
+    return total_time_king
+
+
+def get_reign_time(df, players):
+    reign_time = df
+
+    # include other players
+    if len(reign_time['Name'].unique()) < len(players):
+        for player in players:
+            if player not in reign_time['Name'].unique():
+                reign_time = pd.concat(
+                    [reign_time, pd.DataFrame({'Name': [player], 'Interval':[0]})])
+
+    return reign_time
+
+
+def get_crown_transition_graph(df, players, total_duration_seconds):
+    df['interval_perc'] = df['Interval'].apply(
+        lambda x: int(np.ceil(x/total_duration_seconds * 100)))
+
+    graph_vector = []
+    for _, transition in df.iterrows():
+        graph_vector.extend(
+            transition.Name for i in range(transition.interval_perc))
+
+    return graph_vector
+
+
 def get_date_from(filename):
     date = filename.split(' ')[1].replace('(', '')
-    time = filename.split(' ')[2].replace(').csv', '')
+    time = filename.split(' ')[2].replace(').json', '')
     return datetime.strptime("%s %s" % (date, time), "%d-%m-%Y %H_%M_%S")
 
 

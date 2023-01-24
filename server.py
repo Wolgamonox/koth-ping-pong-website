@@ -45,25 +45,24 @@ def plot_summary():
 @app.route('/upload', methods=['POST'])
 def upload():
     now = datetime.now().strftime("%d-%m-%Y %H_%M_%S")
-    filename = 'games_data/game (%s).csv' % now
-
+    filename = 'games_data/game (%s).json' % now
     print(filename)
-    parse_json_to_csv(filename, request.data.decode())
+    save_json(filename, request.data.decode())
 
-    webbrowser.open('http://' + get_hostname() + url_for('plot_summary', filename=filename))
+    # open summary
+    webbrowser.open('http://' + get_hostname() +
+                    url_for('plot_summary', filename=filename))
 
     return 'Success', 200
 
 
-def parse_json_to_csv(filename, raw_json):
-    transitions = json.loads(raw_json)['transitions']
-    df = pd.DataFrame({
-        'Name': [list(transition.keys())[0] for transition in transitions],
-        'Interval': [list(transition.values())[0] for transition in transitions]
-    })
+def save_json(filename, raw_json):
 
-    print(df)
-    df.to_csv(filename)
+    # save to file
+    with open(filename, 'w') as outfile:
+        outfile.write(raw_json)
+
+    print(json.loads(raw_json))
 
 
 def get_hostname():
