@@ -50,8 +50,6 @@ def upload():
     print(filename)
     parse_json_to_csv(filename, request.data.decode())
 
-    save_summary(filename)
-
     webbrowser.open('http://' + get_hostname() + url_for('plot_summary', filename=filename))
 
     return 'Success', 200
