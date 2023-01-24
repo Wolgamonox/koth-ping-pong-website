@@ -1,0 +1,21 @@
+{
+    "players": [
+        "Gaston",
+        "Mathieu",
+        "Marc"
+    ],
+    "transitions": [
+        {
+            "Gaston": 4
+        },
+        {
+            "Mathieu": 4
+        },
+        {
+            "Marc": 38
+        },
+        {
+            "Gaston": 12
+        }
+    ]
+}
