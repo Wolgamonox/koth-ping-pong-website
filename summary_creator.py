@@ -41,7 +41,11 @@ def generate_summary(filename):
     # Total Time as king
     ax = fig.add_subplot(gs[0, 0])
     ax.pie(total_time_king['Duration'], labels=total_time_king.index,
-           autopct='%.0f%%', colors=[player_colors[key] for key in player_colors])
+           autopct='%.0f%%')
+    pie_wedges = ax.pie(total_time_king['Duration'], labels=total_time_king.index, autopct='%.0f%%')
+    for pie_wedge in pie_wedges[0]:
+        pie_wedge.set_edgecolor('white')
+        pie_wedge.set_facecolor(player_colors[pie_wedge.get_label()])
     ax.set_title('Fraction of time as king')
 
     # Mean Reign time
