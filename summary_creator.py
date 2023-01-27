@@ -27,7 +27,7 @@ def generate_summary(filename):
     total_duration_seconds = df['Interval'].sum()
 
     player_colors = {name: color for name, color in zip(
-        players, sns.color_palette('Pastel1')[:len(players)])}
+        players, sns.color_palette('Pastel1', n_colors=len(players)))}
 
     crowns_claimed = get_crowns_claimed(df, players)
     total_time_king = get_total_time_king(df, players)
