@@ -9,7 +9,7 @@ import matplotlib.gridspec as gridspec
 import seaborn as sns
 
 
-def generate_summary(filename):
+def generate_plot_summary(filename):
     """Function to plot summary of game from filename."""
 
     # read from file
@@ -148,7 +148,7 @@ def get_date_from(filename):
 
 
 def save_summary(filename: str):
-    fig = generate_summary(filename)
+    fig = generate_plot_summary(filename)
 
     path = filename.split('.')[0] + '.png'
 

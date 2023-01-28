@@ -1,72 +1,108 @@
-from summary_creator import *
-
 from flask import Flask, request, render_template, redirect, url_for
 from flask_qrcode import QRcode
+from flask import Response
 
 from datetime import datetime
 import netifaces
-import json
-import pandas as pd
-
 import webbrowser
 import io
 
-from flask import Response
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
 import os
 
+from summary_creator import generate_plot_summary
+
+import hmac
+from hashlib import sha256
+
+
 os.makedirs('games_data', exist_ok=True)
+
+PORT = 17809
 
 app = Flask(__name__)
 qrcode = QRcode(app)
 
 
+###################
+#   Flask Views   #
+###################
+
+@app.route("/hmac_test_view")
+def hmac_test_view():
+    return "hmac_auth_view"
+
+
 @app.route("/show-qr")
 def show_qr():
+    """
+    Show QR code with address of the server.
+    """
     host_name = get_hostname()
     return render_template('qr_code.html', host_name=host_name)
 
 
 @app.route('/summary')
 def summary():
+    """
+    View of summary of a game.
+    """
     return render_template('game_summary.html', filename=request.args['filename'])
 
 
 @app.route('/plot_summary.png')
 def plot_summary():
+    """
+    Renders the summary to a png.
+    """
     summary_filename = request.args.get('filename')
-    fig = generate_summary(summary_filename)
+    fig = generate_plot_summary(summary_filename)
     output = io.BytesIO()
     FigureCanvas(fig).print_png(output)
     return Response(output.getvalue(), mimetype='image/png')
 
 
 @app.route('/upload', methods=['POST'])
-def upload():
-    now = datetime.now().strftime("%d-%m-%Y %H_%M_%S")
-    filename = 'games_data/game (%s).json' % now
-    print(filename)
+def upload(open_browser=True):
+    """
+    API endpoint for uploading raw app data.
+    """
+    filename = generate_filename()
+
+    print('Saving to %s.' % filename)
     save_json(filename, request.data.decode())
 
-    # open summary
-    webbrowser.open('http://' + get_hostname() +
-                    url_for('plot_summary', filename=filename))
+    if open_browser:
+        webbrowser.open('http://' + get_hostname() +
+                        url_for('plot_summary', filename=filename))
 
     return 'Success', 200
 
 
-def save_json(filename, raw_json):
 
-    # save to file
+
+
+def save_json(filename, raw_json):
+    """
+    Save raw json data to a file.
+    """
     with open(filename, 'w') as outfile:
         outfile.write(raw_json)
 
-    print(json.loads(raw_json))
+
+def generate_filename():
+    """
+    Generate summary filename based on current datetime.
+    """
+    now = datetime.now().strftime("%d-%m-%Y %H_%M_%S")
+    return 'games_data/game (%s).json' % now
 
 
 def get_hostname():
-    # To get host ip
+    """
+    Get hostname of current machine. Filters out local hostname and WSL host.
+    """
     for iface in netifaces.interfaces():
         iface_details = netifaces.ifaddresses(iface)
         if netifaces.AF_INET in iface_details:
@@ -76,4 +112,4 @@ def get_hostname():
                     if key == 'addr' and ip_add != '127.0.0.1' and not ip_add.startswith('172'):
                         host_ip = ip_add
 
-    return '%s:%d' % (host_ip, 17809)
+    return '%s:%d' % (host_ip, PORT)
