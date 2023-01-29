@@ -41,3 +41,20 @@ For a guide on how to use the app, check the [app readme](https://github.com/Wol
 ### 2.1 Graphs
 
 ### 2.2 Metrics
+
+*Definitions:*
+
+General:
+- $N_p$: number of players.
+- $T$: duration of game (in seconds)
+- $C = \sum_m^{N_p} c_i$  : total number of crowns claimed
+
+For each player $i$:
+- $\bar{t}_k^i \in [0,1]$: fraction of time as king for player $i$
+$$\bar{t}_k^i = \frac{t_k^i}{T}$$
+
+- $\bar{c}_i \in [0,1]$: normalized number of crowns claimed for player $i$
+$$\bar{c}_i = \frac{c_i}{C}$$
+
+
+
