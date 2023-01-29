@@ -13,9 +13,6 @@ import os
 
 from summary_creator import generate_plot_summary
 
-import hmac
-from hashlib import sha256
-
 
 os.makedirs('games_data', exist_ok=True)
 
@@ -29,9 +26,9 @@ qrcode = QRcode(app)
 #   Flask Views   #
 ###################
 
-@app.route("/hmac_test_view")
-def hmac_test_view():
-    return "hmac_auth_view"
+@app.route('/ping')
+def ping():
+    return "pong", 200
 
 
 @app.route("/show-qr")
@@ -39,8 +36,11 @@ def show_qr():
     """
     Show QR code with address of the server.
     """
-    host_name = get_hostname()
-    return render_template('qr_code.html', host_name=host_name)
+    if request.host.split(':')[0] == '127.0.0.1':
+        host_name = get_hostname()
+        return render_template('qr_code.html', host_name=host_name)
+    else:
+        return "Ressource only accessible from localhost", 403
 
 
 @app.route('/summary')
