@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect, url_for
+from flask import Flask, request, render_template, url_for
 from flask_qrcode import QRcode
 from flask import Response
 
@@ -11,7 +11,7 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
 import os
 
-from summary_creator import generate_plot_summary
+from koth_stats.figures_creator import generate_fig_summary
 
 
 os.makedirs('games_data', exist_ok=True)
@@ -57,10 +57,8 @@ def plot_summary():
     Renders the summary to a png.
     """
     summary_filename = request.args.get('filename')
-    fig = generate_plot_summary(summary_filename)
-    output = io.BytesIO()
-    FigureCanvas(fig).print_png(output)
-    return Response(output.getvalue(), mimetype='image/png')
+    fig_bytes = generate_fig_summary(summary_filename, as_bytes=True)
+    return Response(fig_bytes, mimetype='image/png')
 
 
 @app.route('/upload', methods=['POST'])
@@ -78,9 +76,6 @@ def upload(open_browser=True):
                         url_for('plot_summary', filename=filename))
 
     return 'Success', 200
-
-
-
 
 
 def save_json(filename, raw_json):
