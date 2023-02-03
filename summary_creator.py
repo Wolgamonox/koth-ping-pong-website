@@ -82,7 +82,21 @@ def generate_plot_summary(filename):
             df.iloc[-1]['Name']),
     )
 
+    for player in players:
+        print('%s S= %.3f' % (player, calculate_S(player, total_time_king, crowns_claimed, df.iloc[-1]['Name'], total_duration_seconds)))
+
     return fig
+
+def calculate_S(player, total_time_king, crowns_claimed, last_king, game_duration):
+    alpha = 15
+    beta = 3 * game_duration
+    gamma = 5 * game_duration
+
+    t = total_time_king.loc[player]['Duration']
+    c = crowns_claimed.loc[player]['Claimed']
+    w = 1 if last_king == player else 0
+
+    return (alpha * t + beta * c + gamma * w) / game_duration
 
 
 def get_crowns_claimed(df, players):
