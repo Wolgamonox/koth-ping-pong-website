@@ -1,0 +1,11 @@
+{% extends '../base/base.html' %}
+
+{% block title %}{{ game }}{% endblock title %}
+
+{% block heading %}{{ game }}{% endblock heading %}
+
+{% block content %}
+
+<img src="data:image/png;base64,{{ game.get_plot_total_time }}" alt="">
+
+{% endblock content %}

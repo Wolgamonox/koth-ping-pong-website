@@ -1,0 +1,29 @@
+{% extends '../base/base.html' %}
+
+{% block title %}All games{% endblock title %}
+
+{% block heading %}All games{% endblock heading %}
+
+{% block content %}
+
+<div class="container">
+    
+    <div class="row row-cols-3 g-5">
+        {% for game in games %}
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                  {{ game }}
+                </div>
+                <ul class="list-group list-group-flush">
+                    {% for player in game.players.all %}
+                        <li class="list-group-item">{{ player.first_name }} {{ player.last_name }}</li>
+                    {% endfor %}
+                  </ul>
+              </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock content %}
