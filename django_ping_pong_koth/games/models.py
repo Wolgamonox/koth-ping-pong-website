@@ -21,16 +21,7 @@ class Game(models.Model):
         ordering = ("-date",)
 
     def __str__(self):
-        return "Game %s" % self.date.strftime("%Y-%m-%d %H:%M:%S")
-
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-
-        self.preprocessing_df()
-        self.plot_setup()
-
-    def plot_setup(self):
-        mpl.rcParams["font.size"] = 14
+        return "Game [%d]" % self.pk
 
     def preprocessing_df(self):
         """
@@ -39,6 +30,8 @@ class Game(models.Model):
         The dataframe contains the transitions in the format:
         Name (player name) | Duration
         """
+
+        mpl.rcParams["font.size"] = 14
 
         self.transisitons_df = pd.DataFrame(
             {
@@ -62,6 +55,8 @@ class Game(models.Model):
         """
         Pie chart representing the percentage of time as king.
         """
+        self.preprocessing_df()
+
         total_time_king = (
             self.transisitons_df.groupby("Name").sum().sort_values("Duration", ascending=False)
         )
@@ -99,6 +94,7 @@ class Game(models.Model):
         """
         Box plots representing the reign time for each player.
         """
+        self.preprocessing_df()
 
         reign_time = self.transisitons_df
 
@@ -131,6 +127,8 @@ class Game(models.Model):
         """
         Bar plot representing number of crowns claimed by each player
         """
+        self.preprocessing_df()
+
         first_king = self.transisitons_df.iloc[0]["Name"]
 
         crowns_claimed = (
@@ -175,6 +173,8 @@ class Game(models.Model):
         """
         Line plot representing transitions of the crown between each players
         """
+
+        self.preprocessing_df()
 
         total_duration_seconds = self.transisitons_df["Duration"].sum()
 
