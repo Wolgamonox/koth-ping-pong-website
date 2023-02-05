@@ -8,19 +8,17 @@
 
 <div class="container">
     
-    <div class="row row-cols-3 g-5">
+    <div class="row row-cols-4 g-5">
         {% for game in games %}
         <div class="col">
             <div class="card">
-                <div class="card-header">
-                  {{ game }}
+                <img src="data:image/png;base64,{{ game.total_time_king_plot }}" class="card-img-top" alt="Game miniature image">
+                <div class="card-body">
+                    <h5 class="card-title">{{ game }}</h5>
+                    <p class="card-text">Players: {% for player in game.players.all %}{{ player.first_name }} {% endfor %}</p>
+                    <a href="{% url 'games:detail' game.id %}" class="btn btn-primary">Details</a>
                 </div>
-                <ul class="list-group list-group-flush">
-                    {% for player in game.players.all %}
-                        <li class="list-group-item">{{ player.first_name }} {{ player.last_name }}</li>
-                    {% endfor %}
-                  </ul>
-              </div>
+            </div>
         </div>
         {% endfor %}
     </div>
