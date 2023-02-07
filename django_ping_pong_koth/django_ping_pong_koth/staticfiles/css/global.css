@@ -1,0 +1,15 @@
+:root {
+    --koth-primary: #2292a4;
+}
+
+.btn-primary {
+    background-color: var(--koth-primary);
+    border: none;
+}
+
+.btn-primary:hover,
+.btn-primary:active {
+    background-color: var(--koth-primary);
+    border: none;
+    filter: brightness(90%);
+}

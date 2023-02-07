@@ -1,6 +1,11 @@
 from django.contrib.auth.models import User
 from django.http import HttpResponseNotFound, JsonResponse
 from django.views.decorators.http import require_GET
+from django.views.generic import TemplateView
+
+
+class HomePageView(TemplateView):
+    template_name = "home/index.html"
 
 
 @require_GET

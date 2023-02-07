@@ -16,7 +16,7 @@ def main():
     elif base.ENVIRONMENT == "PRODUCTION":
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_ping_pong_koth.settings.production")
     else:
-        raise Exception("No ENVIRONMENT variable set")
+        raise Exception("Incorrect ENVIRONMENT variable: %s" % base.ENVIRONMENT)
 
     try:
         from django.core.management import execute_from_command_line
