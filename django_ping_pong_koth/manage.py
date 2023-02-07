@@ -5,13 +5,18 @@ import sys
 
 from django_ping_pong_koth.settings import base
 
+
 def main():
     """Run administrative tasks."""
 
-    if base.DEBUG:
-        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_ping_pong_koth.settings.local')
+    if base.ENVIRONMENT == "DEV":
+        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_ping_pong_koth.settings.dev")
+    elif base.ENVIRONMENT == "STAGE":
+        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_ping_pong_koth.settings.stage")
+    elif base.ENVIRONMENT == "PRODUCTION":
+        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_ping_pong_koth.settings.production")
     else:
-        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_ping_pong_koth.settings.production')
+        raise Exception("No ENVIRONMENT variable set")
 
     try:
         from django.core.management import execute_from_command_line
@@ -24,5 +29,5 @@ def main():
     execute_from_command_line(sys.argv)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
