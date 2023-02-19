@@ -10,3 +10,4 @@ pandas==1.5.3
 python-dotenv==0.21.1
 seaborn==0.12.2
 pipreqs==0.4.11
+jupyter==1.0.0
