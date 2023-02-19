@@ -10,6 +10,14 @@ from django.db import models
 from matplotlib.figure import Figure
 
 
+def fig_to_base64(fig):
+    """Convert matplotlib figure to base64 for html display."""
+
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png")
+    return base64.b64encode(buf.getbuffer()).decode("ascii")
+
+
 class Game(models.Model):
     players = models.ManyToManyField(User)
     transitions = models.JSONField()
@@ -85,10 +93,7 @@ class Game(models.Model):
             pie_wedge.set_facecolor(self.player_colors[pie_wedge.get_label()])
         ax.set_title("Fraction of time as king")
 
-        buf = io.BytesIO()
-        fig.savefig(buf, format="png")
-        data = base64.b64encode(buf.getbuffer()).decode("ascii")
-        return data
+        return fig_to_base64(fig)
 
     def reign_time_plot(self):
         """
@@ -118,10 +123,7 @@ class Game(models.Model):
         ax.set_ylabel("Seconds")
         ax.set_title("Reign time")
 
-        buf = io.BytesIO()
-        fig.savefig(buf, format="png")
-        data = base64.b64encode(buf.getbuffer()).decode("ascii")
-        return data
+        return fig_to_base64(fig)
 
     def crowns_claimed_plot(self):
         """
@@ -164,10 +166,7 @@ class Game(models.Model):
         ax.set_ylabel("")
         ax.set_title("Number of crowns claimed")
 
-        buf = io.BytesIO()
-        fig.savefig(buf, format="png")
-        data = base64.b64encode(buf.getbuffer()).decode("ascii")
-        return data
+        return fig_to_base64(fig)
 
     def crown_transitions_plot(self):
         """
@@ -193,7 +192,4 @@ class Game(models.Model):
         ax.set_xlabel("Game advancement (percent)")
         ax.set_title("Visualization of crown transitions")
 
-        buf = io.BytesIO()
-        fig.savefig(buf, format="png")
-        data = base64.b64encode(buf.getbuffer()).decode("ascii")
-        return data
+        return fig_to_base64(fig)
