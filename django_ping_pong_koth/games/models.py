@@ -9,6 +9,8 @@ from django.contrib.auth.models import User
 from django.db import models
 from matplotlib.figure import Figure
 
+from koth_stats.stats import test_koth
+
 # TODO: Refactor the stats/score into a python module
 # TODO: Refactor the figure making into a python module
 
@@ -47,7 +49,7 @@ class Game(models.Model):
         self.transisitons_df = pd.DataFrame(
             {
                 "Name": [
-                    User.objects.get(id=transition["player"]).get_full_name().split(" ")[0]
+                    User.objects.get(id=transition["player"]).first_name
                     for transition in self.transitions
                 ],
                 "Duration": [transition["duration"] for transition in self.transitions],
@@ -56,7 +58,7 @@ class Game(models.Model):
 
         # Define a set of unique colors for consistent painting for each graph
         self.player_colors = {
-            player.get_full_name().split(" ")[0]: color
+            player.first_name: color
             for player, color in zip(
                 self.players.all(), sns.color_palette("Pastel1", n_colors=len(self.players.all()))
             )
