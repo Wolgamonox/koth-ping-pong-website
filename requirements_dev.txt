@@ -11,4 +11,4 @@ python-dotenv==0.21.1
 seaborn==0.12.2
 pipreqs==0.4.11
 jupyter==1.0.0
-pip install pytest==7.2.1
+pytest==7.2.1
