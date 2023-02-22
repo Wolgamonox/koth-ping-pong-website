@@ -3,9 +3,9 @@
 {% block title %}{{ game }} | Ping Pong KOTH{% endblock title %}
 
 {% block heading %}
-<div class="d-lg-flex text-center text-lg-start">
+<div class="d-lg-flex align-items-center text-center text-lg-start">
     <div>{{ game }}</div>
-    <div class="ms-lg-auto">
+    <div class="ms-lg-auto display-5">
         {% for player in game.players.all %}
         {{ player.first_name }}{% if not forloop.last %}, {% endif %}{% endfor %}
     </div>
@@ -13,25 +13,23 @@
 {% endblock heading %}
 
 {% block content %}
-
 <div class="container text-center pt-2 pb-3 border border-2 rounded-3">
     <h1>Summary</h1>
     <div class="row">
         <div class="col-12 col-md-4">
-            <img class="img-fluid" src="data:image/png;base64,{{ game.total_time_king_plot }}"
+            <img class="img-fluid" src="data:image/png;base64, {{ game.total_time_king_plot }}"
                 alt="Total time as king plot">
         </div>
         <div class="col-12 col-md-4">
-            <img class="img-fluid" src="data:image/png;base64,{{ game.reign_time_plot }}" alt="Reign time plot">
+            <img class="img-fluid" src="data:image/png;base64, {{ game.reign_time_plot }}" alt="Reign time plot">
         </div>
         <div class="col-12 col-md-4">
-            <img class="img-fluid" src="data:image/png;base64,{{ game.crowns_claimed_plot }}" alt="Crowns claimed plot">
+            <img class="img-fluid" src="data:image/png;base64, {{ game.crowns_claimed_plot }}"
+                alt="Crowns claimed plot">
         </div>
     </div>
     <div class="row">
         <img class="img-fluid" src="data:image/png;base64, {{ game.crown_transitions_plot }}" alt="Crowns claimed plot">
-
     </div>
 </div>
-
 {% endblock content %}
