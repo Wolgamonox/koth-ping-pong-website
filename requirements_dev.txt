@@ -12,3 +12,5 @@ seaborn==0.12.2
 pipreqs==0.4.11
 jupyter==1.0.0
 pytest==7.2.1
+black==23.1.0
+flake8==6.0.0
