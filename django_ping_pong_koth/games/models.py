@@ -9,8 +9,6 @@ from django.contrib.auth.models import User
 from django.db import models
 from matplotlib.figure import Figure
 
-from koth_stats.stats import test_koth
-
 # TODO: Refactor the stats/score into a python module
 # TODO: Refactor the figure making into a python module
 
@@ -89,7 +87,6 @@ class Game(models.Model):
         fig = Figure(linewidth=12)
         ax = fig.subplots()
 
-        ax.pie(total_time_king["Duration"], labels=total_time_king.index, autopct="%.0f%%")
         pie_wedges = ax.pie(
             total_time_king["Duration"], labels=total_time_king.index, autopct="%.0f%%"
         )
