@@ -44,7 +44,7 @@ class Game(models.Model):
 
         mpl.rcParams["font.size"] = 14
 
-        self.transisitons_df = pd.DataFrame(
+        self.transitions_df = pd.DataFrame(
             {
                 "Name": [
                     User.objects.get(id=transition["player"]).first_name
@@ -69,7 +69,7 @@ class Game(models.Model):
         self.preprocessing_df()
 
         total_time_king = (
-            self.transisitons_df.groupby("Name").sum().sort_values("Duration", ascending=False)
+            self.transitions_df.groupby("Name").sum().sort_values("Duration", ascending=False)
         )
 
         # In case one or more player(s) were not king at all
@@ -103,7 +103,7 @@ class Game(models.Model):
         """
         self.preprocessing_df()
 
-        reign_time = self.transisitons_df
+        reign_time = self.transitions_df
 
         # In case one or more player(s) were not king at all
         # Include their names in the graph still with a 0 duration
@@ -133,10 +133,10 @@ class Game(models.Model):
         """
         self.preprocessing_df()
 
-        first_king = self.transisitons_df.iloc[0]["Name"]
+        first_king = self.transitions_df.iloc[0]["Name"]
 
         crowns_claimed = (
-            self.transisitons_df.groupby("Name")
+            self.transitions_df.groupby("Name")
             .count()
             .rename({"Duration": "Claimed"}, axis=1)
             .sort_values("Claimed", ascending=False)
@@ -177,14 +177,14 @@ class Game(models.Model):
 
         self.preprocessing_df()
 
-        total_duration_seconds = self.transisitons_df["Duration"].sum()
+        total_duration_seconds = self.transitions_df["Duration"].sum()
 
-        self.transisitons_df["Duration_perc"] = self.transisitons_df["Duration"].apply(
+        self.transitions_df["Duration_perc"] = self.transitions_df["Duration"].apply(
             lambda x: int(ceil(x / total_duration_seconds * 100))
         )
 
         graph_vector = []
-        for _, transition in self.transisitons_df.iterrows():
+        for _, transition in self.transitions_df.iterrows():
             graph_vector.extend(transition.Name for _ in range(transition.Duration_perc))
 
         fig = Figure(figsize=(15, 5))

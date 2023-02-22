@@ -31,6 +31,10 @@ class KothStatService:
         self.total_reign_time = TotalReignTimeStat(players, transitions_df)
         self.reign_time = ReignTimeStat(players, transitions_df)
 
+    def points_df(self):
+        points_df = self.total_reign_time.points_as_df()
+        return points_df
+
 
 class KothStat(ABC):
     @abstractmethod
@@ -60,6 +64,18 @@ class KothStat(ABC):
     @property
     def points(self) -> dict[str, float]:
         return {player: self.calculate_points(player) for player in self.players}
+
+    def points_as_df(self) -> pd.DataFrame:
+        points_df = pd.DataFrame(
+            {
+                "Name": self.players,
+                "Points": [self.calculate_points(player) for player in self.players],
+            }
+        )
+
+        points_df.set_index("Name")
+
+        return points_df
 
 
 class TotalReignTimeStat(KothStat):
@@ -149,3 +165,59 @@ class ReignTimeStat(KothStat):
         )
 
         return math.ceil(BETA * df_points["Points"].sum())
+
+
+class CrownsClaimedStat(KothStat):
+    def __init__(self, players: list[str], transitions_df: pd.DataFrame):
+        super().__init__(players, transitions_df)
+
+        first_king = self.transitions_df.iloc[0]["Name"]
+
+        self.crowns_claimed_df = (
+            self.transitions_df.groupby("Name")
+            .count()
+            .rename({"Duration": "Claimed"}, axis=1)
+            .sort_values("Claimed", ascending=False)
+        )
+
+        # Substract one crown to the first king since he did not claim it
+        self.crowns_claimed_df.loc[first_king]["Claimed"] -= 1
+
+        # In case one or more player(s) were not king at all
+        # Include their names in the graph still with a 0 duration
+        if len(self.crowns_claimed_df) < len(self.players):
+            for player in self.players:
+                if player not in self.crowns_claimed_df.index:
+                    self.crowns_claimed_df = pd.concat(
+                        [
+                            self.crowns_claimed_df,
+                            pd.DataFrame({"Claimed": 0}, index=[player]),
+                        ]
+                    )
+
+    def plot(self, include_title=False) -> Figure:
+        fig = Figure()
+        ax = fig.subplots()
+
+        sns.barplot(
+            x=self.crowns_claimed_df.index,
+            y=self.crowns_claimed_df["Claimed"],
+            palette=self.player_colors,
+            ax=ax,
+        )
+        ax.set_yticks(
+            range(
+                0,
+                int(math.ceil(self.crowns_claimed["Claimed"].max())) + 1,
+            )
+        )
+        ax.set_xlabel("")
+        ax.set_ylabel("")
+
+        if include_title:
+            ax.set_title("Number of crowns claimed")
+
+        return fig
+
+    def calculate_points(self, player: str) -> float:
+        return 0
