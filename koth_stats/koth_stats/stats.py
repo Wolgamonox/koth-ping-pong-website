@@ -22,17 +22,26 @@ ALPHA = 100
 BETA = 0.05
 SIGMA = 1.9
 
+POINTS_FOR_LAST_KING = 30
+
 
 class KothStatService:
     """Wrapper class to contain all stats for the KOTH."""
 
     def __init__(self, players: list[str], transitions_df: pd.DataFrame):
         self.players = players
+        self.transitions_df = transitions_df
+
         self.total_reign_time = TotalReignTimeStat(players, transitions_df)
         self.reign_time = ReignTimeStat(players, transitions_df)
 
     def points_df(self):
         points_df = self.total_reign_time.points_as_df()
+        points_df += self.reign_time.points_as_df()
+
+        # points for being last king
+        last_king = self.transitions_df.iloc[-1]["Name"]
+        points_df.loc[last_king] += POINTS_FOR_LAST_KING
         return points_df
 
 
@@ -58,11 +67,11 @@ class KothStat(ABC):
         pass
 
     @abstractmethod
-    def calculate_points(self, player: str) -> float:
+    def calculate_points(self, player: str) -> int:
         return 0
 
     @property
-    def points(self) -> dict[str, float]:
+    def points(self) -> dict[str, int]:
         return {player: self.calculate_points(player) for player in self.players}
 
     def points_as_df(self) -> pd.DataFrame:
@@ -117,7 +126,7 @@ class TotalReignTimeStat(KothStat):
 
         return fig
 
-    def calculate_points(self, player: str) -> float:
+    def calculate_points(self, player: str) -> int:
         points = self.total_reign_time_df.loc[player]["Duration"] / self.game_duration
         return math.ceil(ALPHA * points)
 
@@ -153,7 +162,7 @@ class ReignTimeStat(KothStat):
 
         return fig
 
-    def calculate_points(self, player: str) -> float:
+    def calculate_points(self, player: str) -> int:
         def reign_time_points_eval(seconds, sigma=SIGMA):
             seconds_normalized = int(math.ceil(seconds / self.game_duration * 100))
             return seconds_normalized**sigma
@@ -219,5 +228,39 @@ class CrownsClaimedStat(KothStat):
 
         return fig
 
-    def calculate_points(self, player: str) -> float:
-        return 0
+    def calculate_points(self, player: str) -> int:
+        return super().calculate_points(player)
+
+
+class GraphVizualisationStat(KothStat):
+    def __init__(self, players: list[str], transitions_df: pd.DataFrame):
+        super().__init__(players, transitions_df)
+
+        # normalize seconds for nice display
+        transitions_df["Duration_perc"] = self.transitions_df["Duration"].apply(
+            lambda seconds: int(math.ceil(seconds / self.game_duration * 100))
+        )
+
+        self.graph_vector = []
+        for _, transition in transitions_df.iterrows():
+            self.graph_vector.extend(transition["Name"] for _ in range(transition["Duration_perc"]))
+
+    def plot(self, include_title=False) -> Figure:
+        fig = Figure(figsize=(15, 5))
+        ax = fig.subplots()
+
+        sns.lineplot(
+            x=range(len(self.graph_vector)),
+            y=self.graph_vector,
+            drawstyle="steps",
+            ax=ax,
+        )
+        ax.set_xlabel("Game advancement (%)")
+
+        if include_title:
+            ax.set_title("Visualization of crown transitions")
+
+        return fig
+
+    def calculate_points(self, player: str) -> int:
+        return super().calculate_points(player)
