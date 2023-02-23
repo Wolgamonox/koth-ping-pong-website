@@ -37,6 +37,7 @@ class KothStatService:
         self.crowns_claimed = CrownsClaimedStat(players, transitions_df)
         self.graph_visualization = GraphVisualizationStat(players, transitions_df)
 
+    @property
     def points_df(self):
         points_df = self.total_reign_time.points_as_df()
         points_df += self.reign_time.points_as_df()
