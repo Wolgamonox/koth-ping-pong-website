@@ -18,7 +18,7 @@ from matplotlib.figure import Figure
 PLOT_LINEWIDTH = 12
 
 # DEFAULT POINTS SETTINGS
-ALPHA = 100
+ALPHA = 190
 BETA = 0.05
 SIGMA = 1.9
 
@@ -34,14 +34,18 @@ class KothStatService:
 
         self.total_reign_time = TotalReignTimeStat(players, transitions_df)
         self.reign_time = ReignTimeStat(players, transitions_df)
+        self.crowns_claimed = CrownsClaimedStat(players, transitions_df)
+        self.graph_visualization = GraphVisualizationStat(players, transitions_df)
 
     def points_df(self):
         points_df = self.total_reign_time.points_as_df()
         points_df += self.reign_time.points_as_df()
+        points_df += self.crowns_claimed.points_as_df()
 
         # points for being last king
         last_king = self.transitions_df.iloc[-1]["Name"]
         points_df.loc[last_king] += POINTS_FOR_LAST_KING
+
         return points_df
 
 
@@ -82,7 +86,7 @@ class KothStat(ABC):
             }
         )
 
-        points_df.set_index("Name")
+        points_df.set_index("Name", inplace=True)
 
         return points_df
 
@@ -217,7 +221,7 @@ class CrownsClaimedStat(KothStat):
         ax.set_yticks(
             range(
                 0,
-                int(math.ceil(self.crowns_claimed["Claimed"].max())) + 1,
+                int(math.ceil(self.crowns_claimed_df["Claimed"].max())) + 1,
             )
         )
         ax.set_xlabel("")
@@ -232,7 +236,7 @@ class CrownsClaimedStat(KothStat):
         return super().calculate_points(player)
 
 
-class GraphVizualisationStat(KothStat):
+class GraphVisualizationStat(KothStat):
     def __init__(self, players: list[str], transitions_df: pd.DataFrame):
         super().__init__(players, transitions_df)
 

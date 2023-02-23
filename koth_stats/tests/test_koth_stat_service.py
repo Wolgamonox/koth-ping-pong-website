@@ -21,15 +21,28 @@ def koth_service():
     return ks.KothStatService(players, transitions_df)
 
 
-def test_initialization(koth_service):
-    assert koth_service.players[0] == "A"
+class TestKothservice:
+    def test_initialization(self, koth_service):
+        assert koth_service.players[0] == "A"
+
+    def test_points(self, koth_service: ks.KothStatService):
+        points_df = pd.DataFrame(
+            index=["A", "B", "C"],
+            data={"Points": [0, 0, 0]},
+        )
+
+        points_df += koth_service.total_reign_time.points_as_df()
+        points_df += koth_service.reign_time.points_as_df()
+        points_df.loc["C"] += ks.POINTS_FOR_LAST_KING
+
+        assert koth_service.points_df().equals(points_df)
 
 
 class TestTotalReignTimeStat:
-    def test_total_reign_time_plot(self, koth_service):
+    def test_plot(self, koth_service):
         assert type(koth_service.total_reign_time.plot()) == mpl.figure.Figure
 
-    def test_total_reign_time_points(self, koth_service):
+    def test_points(self, koth_service):
         points = {
             "A": 10,
             "B": 20,
@@ -42,10 +55,10 @@ class TestTotalReignTimeStat:
 
 
 class TestReignTimeStat:
-    def test_reign_time_plot(self, koth_service):
+    def test_plot(self, koth_service):
         assert type(koth_service.reign_time.plot()) == mpl.figure.Figure
 
-    def test_reign_time_points(self, koth_service):
+    def test_points(self, koth_service):
         points = {
             "A": 10,
             "B": 20,
@@ -60,3 +73,29 @@ class TestReignTimeStat:
         }
 
         assert koth_service.reign_time.points == points
+
+
+class TestCrownsClaimnedStat:
+    def test_plot(self, koth_service):
+        assert type(koth_service.crowns_claimed.plot()) == mpl.figure.Figure
+
+    def test_points(self, koth_service):
+        points = {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+        }
+        assert koth_service.crowns_claimed.points == points
+
+
+class TestGraphVisualizationStat:
+    def test_plot(self, koth_service):
+        assert type(koth_service.graph_visualization.plot()) == mpl.figure.Figure
+
+    def test_points(self, koth_service):
+        points = {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+        }
+        assert koth_service.graph_visualization.points == points
