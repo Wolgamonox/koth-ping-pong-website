@@ -37,8 +37,7 @@ class KothStatService:
         self.crowns_claimed = CrownsClaimedStat(players, transitions_df)
         self.graph_visualization = GraphVisualizationStat(players, transitions_df)
 
-    @property
-    def points_df(self):
+    def points_df(self, ascending=False):
         points_df = self.total_reign_time.points_as_df()
         points_df += self.reign_time.points_as_df()
         points_df += self.crowns_claimed.points_as_df()
@@ -46,6 +45,8 @@ class KothStatService:
         # points for being last king
         last_king = self.transitions_df.iloc[-1]["Name"]
         points_df.loc[last_king] += POINTS_FOR_LAST_KING
+
+        points_df = points_df.sort_values("Points", ascending=ascending)
 
         return points_df
 
@@ -113,7 +114,7 @@ class TotalReignTimeStat(KothStat):
                         ]
                     )
 
-    def plot(self, include_title=True) -> Figure:
+    def plot(self, include_title=False) -> Figure:
         fig = Figure(linewidth=PLOT_LINEWIDTH)
         ax = fig.subplots()
 
