@@ -24,6 +24,8 @@ SIGMA = 1.9
 
 POINTS_FOR_LAST_KING = 30
 
+# TODO REFACTOR ALL THE SETTINGS INTO SOME SORT OF CONFIG FILE
+
 
 class KothStatService:
     """Wrapper class to contain all stats for the KOTH."""
