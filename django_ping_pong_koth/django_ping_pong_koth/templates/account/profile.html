@@ -1,0 +1,43 @@
+{% extends '../base/base.html' %}
+
+
+{% block title %}{{ user.first_name }}{% endblock title %}
+
+
+{% block heading %}
+
+<div class="d-lg-flex align-items-center text-center text-lg-start">
+    <div>{{ user.first_name }}</div>
+    <div class="ms-lg-auto display-5">
+        <a href="{% url 'logout' %}" class="btn btn-info"><i class="bi bi-box-arrow-right"></i> Logout</a>
+    </div>
+</div>
+
+{% endblock heading %}
+
+{% block content %}
+
+<table class="table">
+    <thead>
+      <tr>
+        <th scope="col">id</th>
+        <th scope="col">First Name</th>
+        <th scope="col">Last Name</th>
+        <th scope="col">Email</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th scope="row">{{ user.pk }}</th>
+            <td>{{ user.first_name }}</td>
+            <td>{{ user.last_name }}</td>
+            <td>{{ user.email }}</td>
+          </tr>
+    </tbody>
+</table>
+
+{% endblock content %}
+
+
+
+
