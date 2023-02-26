@@ -3,7 +3,12 @@
 
   <ul class="nav col-md-4 justify-content-end">
     <li class="nav-item"><a href="{% url 'home:homepage' %}" class="nav-link px-2 text-muted">Home</a></li>
-    <li class="nav-item"><a href="{% url 'games:all' %}" class="nav-link px-2 text-muted">All Games</a></li>
     <li class="nav-item"><a href="{% url 'home:about' %}" class="nav-link px-2 text-muted">About</a></li>
+    <li class="nav-item">
+      <a href="{% url 'home:privacy-policy' %}" class="nav-link px-2 text-muted">Privacy Policy</a>
+    </li>
+    <li class="nav-item">
+      <a href="{% url 'home:terms-and-conditions' %}" class="nav-link px-2 text-muted">Terms &amp; Conditions</a>
+    </li>
   </ul>
 </footer>

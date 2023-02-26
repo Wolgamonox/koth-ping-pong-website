@@ -12,6 +12,14 @@ class AboutPageView(TemplateView):
     template_name = "home/about.html"
 
 
+class PrivacyPolicyPageView(TemplateView):
+    template_name = "home/privacy_policy.html"
+
+
+class TermsAndConditionsPageView(TemplateView):
+    template_name = "home/terms_and_conditions.html"
+
+
 @require_GET
 def get_player(request):
     """View to get the player information from its username"""
