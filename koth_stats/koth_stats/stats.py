@@ -52,6 +52,24 @@ class KothStatService:
 
         return points_df
 
+    def points_plot(self, include_title=False) -> Figure:
+        fig = Figure(linewidth=PLOT_LINEWIDTH)
+        ax = fig.subplots()
+
+        medal_colors_palette = sns.color_palette(
+            ["#FFD700", "#C9C0BB", "#CD7F32"] + (len(self.players) - 3) * ["#3E3E40"]
+        )
+
+        points_df = self.points_df()
+
+        sns.barplot(x=points_df.index, y=points_df.Points, palette=medal_colors_palette, ax=ax)
+        ax.set_xlabel("")
+
+        if include_title:
+            ax.set_title("Final score")
+
+        return fig
+
 
 class KothStat(ABC):
     @abstractmethod
