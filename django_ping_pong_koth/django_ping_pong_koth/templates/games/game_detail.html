@@ -17,8 +17,8 @@
     <h1>Summary</h1>
     <div class="row">
         <div class="col-12 col-md-4">
-            <img class="img-fluid" src="data:image/png;base64, {{ game.total_time_king_plot }}"
-                alt="Total time as king plot">
+            <img class="img-fluid" src="data:image/png;base64, {{ game.total_reign_time_plot }}"
+                alt="Total reign time plot">
         </div>
         <div class="col-12 col-md-4">
             <img class="img-fluid" src="data:image/png;base64, {{ game.reign_time_plot }}" alt="Reign time plot">
@@ -31,5 +31,10 @@
     <div class="row">
         <img class="img-fluid" src="data:image/png;base64, {{ game.crown_transitions_plot }}" alt="Crowns claimed plot">
     </div>
+</div>
+
+<div class="container text-center pt-2 pb-3 border border-2 rounded-3 mt-4">
+    <h1>Score</h1>
+    <img class="img-fluid" src="data:image/png;base64, {{ game.points_plot }}" alt="Points plot">
 </div>
 {% endblock content %}
