@@ -14,3 +14,4 @@ jupyter==1.0.0
 pytest==7.2.1
 black==23.1.0
 flake8==6.0.0
+-e git+https://github.com/Wolgamonox/koth-ping-pong-backend.git@aeca0e63fa66892eee5c8dd4dc21c9120c11f59c#egg=koth_stats&subdirectory=koth_stats
