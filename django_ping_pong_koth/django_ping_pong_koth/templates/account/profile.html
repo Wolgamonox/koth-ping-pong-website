@@ -1,5 +1,6 @@
 {% extends '../base/base.html' %}
 
+{% load tz %}
 
 {% block title %}{{ user.first_name }}{% endblock title %}
 
@@ -35,6 +36,33 @@
           </tr>
     </tbody>
 </table>
+
+<h2 class="display-4">Games</h2>
+
+<div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3">
+  {% for game in games %}
+  <div class="col">
+      <div class="card rounded-3">
+          <img src="data:image/png;base64,{{ game.total_reign_time_plot }}"
+              class="card-img-top border-bottom rounded-top-3" alt="Game miniature image">
+          <div class="d-flex flex-row card-body">
+              <div>
+                  <h5 class="card-title">{{ game }}</h5>
+                  <p class="card-text text-wrap me-3">
+                      Players: {% for player in game.players.all %}
+                      {{ player.first_name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                  </p>
+              </div>
+              <a href="{% url 'games:detail' game.id %}"
+                  class="btn btn-info ms-auto align-self-center">Details</a>
+          </div>
+          <div class="card-footer text-muted">
+              {{ game.date | localtime | date:"H:i D. dS M. Y" }}
+          </div>
+      </div>
+  </div>
+  {% endfor %}
+</div>
 
 {% endblock content %}
 
