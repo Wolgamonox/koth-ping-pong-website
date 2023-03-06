@@ -1,7 +1,7 @@
+import json
 import math
 from abc import ABC, abstractmethod
 
-# import matplotlib as mpl
 import pandas as pd
 import seaborn as sns
 from matplotlib.figure import Figure
@@ -18,19 +18,59 @@ from matplotlib.figure import Figure
 PLOT_LINEWIDTH = 12
 
 # DEFAULT POINTS SETTINGS
-ALPHA = 190
-BETA = 0.05
-SIGMA = 1.9
+DEFAULT_ALPHA = 190
+DEFAULT_BETA = 0.05
+DEFAULT_SIGMA = 1.9
 
-POINTS_FOR_LAST_KING = 30
+DEFAULT_POINTS_LAST_KING = 30
 
 # TODO REFACTOR ALL THE SETTINGS INTO SOME SORT OF CONFIG FILE
+
+
+class ScoreParameters:
+    """Class holding the parameters for the score."""
+
+    def __init__(
+        self,
+        alpha=DEFAULT_ALPHA,
+        beta=DEFAULT_BETA,
+        sigma=DEFAULT_SIGMA,
+        points_last_king=DEFAULT_POINTS_LAST_KING,
+    ):
+        self.alpha = alpha
+        self.beta = beta
+        self.sigma = sigma
+        self.points_last_king = points_last_king
+
+    @classmethod
+    def from_file(cls, filename: str):
+        """Loads score parameters from file."""
+        with open(filename, "r") as file:
+            try:
+                params = json.load(file)
+
+                return ScoreParameters(
+                    alpha=params["alpha"],
+                    beta=params["beta"],
+                    sigma=params["sigma"],
+                    points_last_king=params["points_last_king"],
+                )
+            except Exception as e:
+                print(e)
+
+                print("Error reading config file, using default parameters instead.")
+                return ScoreParameters()
 
 
 class KothStatService:
     """Wrapper class to contain all stats for the KOTH."""
 
-    def __init__(self, players: list[str], transitions_df: pd.DataFrame):
+    def __init__(
+        self,
+        players: list[str],
+        transitions_df: pd.DataFrame,
+        score_parameters=ScoreParameters(),
+    ):
         self.players = players
         self.transitions_df = transitions_df
 
@@ -39,6 +79,8 @@ class KothStatService:
         self.crowns_claimed = CrownsClaimedStat(players, transitions_df)
         self.graph_visualization = GraphVisualizationStat(players, transitions_df)
 
+        self.score_parameters = score_parameters
+
     def points_df(self, ascending=False):
         points_df = self.total_reign_time.points_as_df()
         points_df += self.reign_time.points_as_df()
@@ -46,7 +88,7 @@ class KothStatService:
 
         # points for being last king
         last_king = self.transitions_df.iloc[-1]["Name"]
-        points_df.loc[last_king] += POINTS_FOR_LAST_KING
+        points_df.loc[last_king] += self.score_parameters.points_last_king
 
         points_df = points_df.sort_values("Points", ascending=ascending)
 
@@ -63,7 +105,9 @@ class KothStatService:
         points_df = self.points_df()
 
         sns.barplot(x=points_df.index, y=points_df.Points, palette=medal_colors_palette, ax=ax)
+        ax.set_ylim([0, points_df.Points.max() + points_df.Points.max() / 10])
         ax.set_xlabel("")
+        ax.bar_label(ax.containers[0])
 
         if include_title:
             ax.set_title("Final score")
@@ -73,9 +117,15 @@ class KothStatService:
 
 class KothStat(ABC):
     @abstractmethod
-    def __init__(self, players: list[str], transitions_df: pd.DataFrame):
+    def __init__(
+        self,
+        players: list[str],
+        transitions_df: pd.DataFrame,
+        score_parameters: ScoreParameters,
+    ):
         self.players = players
         self.transitions_df = transitions_df
+        self.score_parameters = score_parameters
 
         self.game_duration = transitions_df["Duration"].sum()
 
@@ -114,10 +164,15 @@ class KothStat(ABC):
 
 
 class TotalReignTimeStat(KothStat):
-    """Class representing the total time as a king"""
+    """Class representing the total time as a king."""
 
-    def __init__(self, players: list[str], transitions_df: pd.DataFrame):
-        super().__init__(players, transitions_df)
+    def __init__(
+        self,
+        players: list[str],
+        transitions_df: pd.DataFrame,
+        score_parameters: ScoreParameters,
+    ):
+        super().__init__(players, transitions_df, score_parameters)
 
         self.total_reign_time_df = self.transitions_df.groupby("Name").sum()
         self.total_reign_time_df.sort_values("Duration", ascending=False)
@@ -154,14 +209,19 @@ class TotalReignTimeStat(KothStat):
 
     def calculate_points(self, player: str) -> int:
         points = self.total_reign_time_df.loc[player]["Duration"] / self.game_duration
-        return math.ceil(ALPHA * points)
+        return math.ceil(self.score_parameters.alpha * points)
 
 
 class ReignTimeStat(KothStat):
-    """Class representing the reign time distribution"""
+    """Class representing the reign time distribution."""
 
-    def __init__(self, players: list[str], transitions_df: pd.DataFrame):
-        super().__init__(players, transitions_df)
+    def __init__(
+        self,
+        players: list[str],
+        transitions_df: pd.DataFrame,
+        score_parameters: ScoreParameters,
+    ):
+        super().__init__(players, transitions_df, score_parameters)
 
         # In case one or more player(s) were not king at all
         # Include their names in the graph still with a 0 duration
@@ -189,8 +249,10 @@ class ReignTimeStat(KothStat):
         return fig
 
     def calculate_points(self, player: str) -> int:
-        def reign_time_points_eval(seconds, sigma=SIGMA):
+        def reign_time_points_eval(seconds):
+            sigma = self.score_parameters.sigma
             seconds_normalized = int(math.ceil(seconds / self.game_duration * 100))
+
             return seconds_normalized**sigma
 
         df_points = self.transitions_df.query("Name == @player").copy()
@@ -199,12 +261,19 @@ class ReignTimeStat(KothStat):
             lambda seconds: reign_time_points_eval(seconds)
         )
 
-        return math.ceil(BETA * df_points["Points"].sum())
+        return math.ceil(self.score_parameters.beta * df_points["Points"].sum())
 
 
 class CrownsClaimedStat(KothStat):
-    def __init__(self, players: list[str], transitions_df: pd.DataFrame):
-        super().__init__(players, transitions_df)
+    """Class representing the crowns claimed."""
+
+    def __init__(
+        self,
+        players: list[str],
+        transitions_df: pd.DataFrame,
+        score_parameters: ScoreParameters,
+    ):
+        super().__init__(players, transitions_df, score_parameters)
 
         first_king = self.transitions_df.iloc[0]["Name"]
 
@@ -259,8 +328,15 @@ class CrownsClaimedStat(KothStat):
 
 
 class GraphVisualizationStat(KothStat):
-    def __init__(self, players: list[str], transitions_df: pd.DataFrame):
-        super().__init__(players, transitions_df)
+    """Class representing graph visualization of the crown transitions."""
+
+    def __init__(
+        self,
+        players: list[str],
+        transitions_df: pd.DataFrame,
+        score_parameters: ScoreParameters,
+    ):
+        super().__init__(players, transitions_df, score_parameters)
 
         # normalize seconds for nice display
         transitions_df["Duration_perc"] = self.transitions_df["Duration"].apply(

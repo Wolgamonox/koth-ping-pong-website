@@ -32,3 +32,7 @@ def upload_game(request):
         print(serializer.data)
         return JsonResponse(serializer.data, status=201)
     return JsonResponse(serializer.errors, status=400)
+
+
+def update_score_parameters(request):
+    pass
