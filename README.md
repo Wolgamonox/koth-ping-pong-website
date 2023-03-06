@@ -4,9 +4,9 @@
   - [Summary statistics](#summary-statistics)
     - [Graphs](#graphs)
     - [Score](#score)
-      - [Score for the **total reign time** :](#score-for-the-total-reign-time-)
-      - [Score for the **reign time** :](#score-for-the-reign-time-)
-      - [Score for the **last king** :](#score-for-the-last-king-)
+      - [Score for the **total reign time**](#score-for-the-total-reign-time)
+      - [Score for the **reign time**](#score-for-the-reign-time)
+      - [Score for the **last king**](#score-for-the-last-king)
       - [Total score](#total-score)
   - [Deployement checklist:](#deployement-checklist)
 
@@ -26,7 +26,7 @@ $T$ : duration of game (in seconds)
 
 For a player $i$ we have:
 
-#### Score for the **total reign time** :
+#### Score for the **total reign time**
 
 $$\bar{S}_{\Delta t}^i = \frac{\Delta t^i}{T}$$
 
@@ -34,7 +34,7 @@ where $\Delta t^i$ is the total reign time of a player $i$.
 
 $$ S_{\Delta t}^i = \lceil \bar{S}_{\Delta t}^i \rceil \in \N$$
 
-#### Score for the **reign time** :
+#### Score for the **reign time**
 
 $$\bar{S}_{\delta t}^i = \sum_{k=1}^m (\delta t_k^i)^\sigma$$
 
@@ -43,7 +43,7 @@ where $\delta t_k^i$ is the k<sup>th</sup> reign time of a player $i$ and $m$ is
 $$ S_{\delta t}^i = \lceil \bar{S}_{\delta t}^i \rceil \in \N$$
 
 
-#### Score for the **last king** :
+#### Score for the **last king**
 
 $$
 S_{W}^i = \begin{cases}
