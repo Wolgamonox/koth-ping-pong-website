@@ -74,10 +74,10 @@ class KothStatService:
         self.players = players
         self.transitions_df = transitions_df
 
-        self.total_reign_time = TotalReignTimeStat(players, transitions_df)
-        self.reign_time = ReignTimeStat(players, transitions_df)
-        self.crowns_claimed = CrownsClaimedStat(players, transitions_df)
-        self.graph_visualization = GraphVisualizationStat(players, transitions_df)
+        self.total_reign_time = TotalReignTimeStat(players, transitions_df, score_parameters)
+        self.reign_time = ReignTimeStat(players, transitions_df, score_parameters)
+        self.crowns_claimed = CrownsClaimedStat(players, transitions_df, score_parameters)
+        self.graph_visualization = GraphVisualizationStat(players, transitions_df, score_parameters)
 
         self.score_parameters = score_parameters
 

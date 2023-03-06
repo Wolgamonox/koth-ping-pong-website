@@ -72,6 +72,13 @@ class Game(models.Model):
         fig = self.koth_service.graph_visualization.plot()
         return fig_to_base64(fig)
 
+    def points_plot(self):
+        """
+        Bar plot representing points for each player
+        """
+        fig = self.koth_service.points_plot()
+        return fig_to_base64(fig)
+
 
 def fig_to_base64(fig):
     """Convert matplotlib figure to base64 for html display."""
@@ -79,10 +86,3 @@ def fig_to_base64(fig):
     buf = io.BytesIO()
     fig.savefig(buf, format="png")
     return base64.b64encode(buf.getbuffer()).decode("ascii")
-
-    def points_plot(self):
-        """
-        Bar plot representing points for each player
-        """
-        fig = self.koth_service.points_plot()
-        return fig_to_base64(fig)
