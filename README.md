@@ -7,6 +7,11 @@
     - [2.1 Graphs](#21-graphs)
     - [2.2 Metrics](#22-metrics)
 
+Deployement checklist:
+
+1. pull from git
+2. run collectstatic
+3. reload website
 
 ## 1. User manual
 
