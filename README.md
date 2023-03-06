@@ -4,9 +4,10 @@
   - [Summary statistics](#summary-statistics)
     - [Graphs](#graphs)
     - [Score](#score)
-      - [Score for the **total reign time**: $S_{\Delta t}^i$](#score-for-the-total-reign-time-s_delta-ti)
-      - [Score for the **reign time**: $S_{\delta t}$](#score-for-the-reign-time-s_delta-t)
-      - [Score for the **last king**: $S_{W}^i$](#score-for-the-last-king-s_wi)
+      - [Score for the **total reign time** :](#score-for-the-total-reign-time-)
+      - [Score for the **reign time** :](#score-for-the-reign-time-)
+      - [Score for the **last king** :](#score-for-the-last-king-)
+      - [Total score](#total-score)
   - [Deployement checklist:](#deployement-checklist)
 
 
@@ -25,24 +26,24 @@ $T$ : duration of game (in seconds)
 
 For a player $i$ we have:
 
-#### Score for the **total reign time**: $S_{\Delta t}^i$
+#### Score for the **total reign time** :
 
-$$\bar{S}_{\Delta t}^i =  \alpha \frac{\Delta t^i}{T}$$
+$$\bar{S}_{\Delta t}^i = \frac{\Delta t^i}{T}$$
 
 where $\Delta t^i$ is the total reign time of a player $i$.
 
 $$ S_{\Delta t}^i = \lceil \bar{S}_{\Delta t}^i \rceil \in \N$$
 
-#### Score for the **reign time**: $S_{\delta t}$
+#### Score for the **reign time** :
 
-$$\bar{S}_{\delta t}^i = \beta \sum_{k=1}^m (\delta t_k^i)^\sigma$$
+$$\bar{S}_{\delta t}^i = \sum_{k=1}^m (\delta t_k^i)^\sigma$$
 
 where $\delta t_k^i$ is the k<sup>th</sup> reign time of a player $i$ and $m$ is the total number of reigns of a player.
 
 $$ S_{\delta t}^i = \lceil \bar{S}_{\delta t}^i \rceil \in \N$$
 
 
-#### Score for the **last king**: $S_{W}^i$
+#### Score for the **last king** :
 
 $$
 S_{W}^i = \begin{cases}
@@ -53,12 +54,15 @@ $$
 
 where $P_{LK}$ are the points awarded for being last king.
 
+#### Total score
+$$S^i = \alpha S_{\Delta t}^i + \beta S_{\delta t}^i + S_{W}^i$$
 
 **Tuning parameters**
 - $\alpha \in \N$: Importance of total reign time
 - $\beta \in \R$: Importance of reign time.
 - $\sigma \in \R$: Also importance of reign time, exponent of the transformation function.
-- $P_{LK}$: Importance of being the last king.
+- $P_{LK} \in \N$: Importance of being the last king.
+
 
 
 ## Deployement checklist:
