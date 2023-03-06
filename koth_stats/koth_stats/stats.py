@@ -250,10 +250,9 @@ class ReignTimeStat(KothStat):
 
     def calculate_points(self, player: str) -> int:
         def reign_time_points_eval(seconds):
-            sigma = self.score_parameters.sigma
             seconds_normalized = int(math.ceil(seconds / self.game_duration * 100))
 
-            return seconds_normalized**sigma
+            return seconds_normalized**self.score_parameters.sigma
 
         df_points = self.transitions_df.query("Name == @player").copy()
 
