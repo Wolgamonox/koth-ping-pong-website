@@ -9,14 +9,6 @@ from django.db import models
 import koth_stats.stats as ks
 
 
-def fig_to_base64(fig):
-    """Convert matplotlib figure to base64 for html display."""
-
-    buf = io.BytesIO()
-    fig.savefig(buf, format="png")
-    return base64.b64encode(buf.getbuffer()).decode("ascii")
-
-
 class Game(models.Model):
     players = models.ManyToManyField(User)
     transitions = models.JSONField()
@@ -79,6 +71,14 @@ class Game(models.Model):
         """
         fig = self.koth_service.graph_visualization.plot()
         return fig_to_base64(fig)
+
+
+def fig_to_base64(fig):
+    """Convert matplotlib figure to base64 for html display."""
+
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png")
+    return base64.b64encode(buf.getbuffer()).decode("ascii")
 
     def points_plot(self):
         """
