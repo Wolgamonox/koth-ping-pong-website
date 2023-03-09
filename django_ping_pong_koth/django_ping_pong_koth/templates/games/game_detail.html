@@ -14,7 +14,7 @@
 
 {% block content %}
 <div class="container text-center pt-2 pb-3 border border-2 rounded-3">
-    <h1>Summary</h1>
+    <h2 class="display-5">Summary</h2>
     <div class="row">
         <div class="col-12 col-md-4">
             <p class="lead mb-0">Total fraction of reign time</p>
@@ -39,7 +39,7 @@
 </div>
 
 <div class="container text-center pt-2 pb-3 border border-2 rounded-3 mt-4">
-    <h1>Score</h1>
+    <h2 class="display-5">Score</h2>
     <img class="img-fluid" src="data:image/png;base64, {{ game.points_plot }}" alt="Points plot">
 </div>
 {% endblock content %}
