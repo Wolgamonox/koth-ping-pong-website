@@ -6,7 +6,7 @@ import pandas as pd
 from django.contrib.auth.models import User
 from django.db import models
 
-import koth_stats.stats as ks
+import koth_stats.game_stats as gs
 
 
 class Game(models.Model):
@@ -37,7 +37,7 @@ class Game(models.Model):
             }
         )
 
-        instance.koth_service = ks.KothStatService(players_names, transitions_df)
+        instance.koth_service = gs.GameStatService(players_names, transitions_df)
 
         return instance
 

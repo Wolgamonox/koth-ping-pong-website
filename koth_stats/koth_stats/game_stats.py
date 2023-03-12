@@ -1,10 +1,11 @@
-import json
 import math
 from abc import ABC, abstractmethod
 
 import pandas as pd
 import seaborn as sns
 from matplotlib.figure import Figure
+
+from .score_parameters import ScoreParameters
 
 # transitions_df format is the following:
 
@@ -17,52 +18,8 @@ from matplotlib.figure import Figure
 # PLOTS SETTINGS
 PLOT_LINEWIDTH = 12
 
-# DEFAULT POINTS SETTINGS
-DEFAULT_ALPHA = 190
-DEFAULT_BETA = 0.05
-DEFAULT_SIGMA = 1.9
 
-DEFAULT_POINTS_LAST_KING = 30
-
-# TODO REFACTOR ALL THE SETTINGS INTO SOME SORT OF CONFIG FILE
-
-
-class ScoreParameters:
-    """Class holding the parameters for the score."""
-
-    def __init__(
-        self,
-        alpha=DEFAULT_ALPHA,
-        beta=DEFAULT_BETA,
-        sigma=DEFAULT_SIGMA,
-        points_last_king=DEFAULT_POINTS_LAST_KING,
-    ):
-        self.alpha = alpha
-        self.beta = beta
-        self.sigma = sigma
-        self.points_last_king = points_last_king
-
-    @classmethod
-    def from_file(cls, filename: str):
-        """Loads score parameters from file."""
-        with open(filename, "r") as file:
-            try:
-                params = json.load(file)
-
-                return ScoreParameters(
-                    alpha=params["alpha"],
-                    beta=params["beta"],
-                    sigma=params["sigma"],
-                    points_last_king=params["points_last_king"],
-                )
-            except Exception as e:
-                print(e)
-
-                print("Error reading config file, using default parameters instead.")
-                return ScoreParameters()
-
-
-class KothStatService:
+class GameStatService:
     """Wrapper class to contain all stats for the KOTH."""
 
     def __init__(
@@ -115,7 +72,7 @@ class KothStatService:
         return fig
 
 
-class KothStat(ABC):
+class GameStat(ABC):
     @abstractmethod
     def __init__(
         self,
@@ -163,7 +120,7 @@ class KothStat(ABC):
         return points_df
 
 
-class TotalReignTimeStat(KothStat):
+class TotalReignTimeStat(GameStat):
     """Class representing the total time as a king."""
 
     def __init__(
@@ -212,7 +169,7 @@ class TotalReignTimeStat(KothStat):
         return math.ceil(self.score_parameters.alpha * points)
 
 
-class ReignTimeStat(KothStat):
+class ReignTimeStat(GameStat):
     """Class representing the reign time distribution."""
 
     def __init__(
@@ -263,7 +220,7 @@ class ReignTimeStat(KothStat):
         return math.ceil(self.score_parameters.beta * df_points["Points"].sum())
 
 
-class CrownsClaimedStat(KothStat):
+class CrownsClaimedStat(GameStat):
     """Class representing the crowns claimed."""
 
     def __init__(
@@ -326,7 +283,7 @@ class CrownsClaimedStat(KothStat):
         return super().calculate_points(player)
 
 
-class GraphVisualizationStat(KothStat):
+class GraphVisualizationStat(GameStat):
     """Class representing graph visualization of the crown transitions."""
 
     def __init__(
