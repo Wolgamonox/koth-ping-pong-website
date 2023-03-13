@@ -7,4 +7,4 @@ numpy==1.22.2
 pandas==1.5.3
 python-dotenv==0.21.1
 seaborn==0.12.2
--e git+https://github.com/Wolgamonox/koth-ping-pong-backend.git#egg=koth_stats&subdirectory=koth_stats
+git+https://github.com/Wolgamonox/koth-ping-pong-backend.git#egg=koth_stats&subdirectory=koth_stats
