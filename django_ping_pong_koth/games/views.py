@@ -12,6 +12,7 @@ class AllGamesView(ListView):
     model = Game
     template_name = "games/all_games.html"
     context_object_name = "games"
+    queryset = Game.objects.filter(valid=True)
 
 
 class GameDetailView(DetailView):
