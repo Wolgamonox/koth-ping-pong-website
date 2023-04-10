@@ -1,25 +1,11 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.http import HttpResponseNotFound, JsonResponse
 from django.views.decorators.http import require_GET
 from django.views.generic import TemplateView
-from games.models import Game
 
 
 class HomePageView(TemplateView):
     template_name = "home/homepage.html"
-
-
-class ProfilePageView(LoginRequiredMixin, TemplateView):
-    template_name = "account/profile.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        context["games"] = Game.objects.filter(
-            players__username__contains=self.request.user.username
-        )
-        return context
 
 
 class AboutPageView(TemplateView):
