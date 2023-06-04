@@ -213,9 +213,7 @@ class ReignTimeStat(GameStat):
 
         df_points = self.transitions_df.query("Name == @player").copy()
 
-        df_points["Points"] = df_points["Duration"].apply(
-            lambda seconds: reign_time_points_eval(seconds)
-        )
+        df_points["Points"] = df_points["Duration"].apply(lambda seconds: reign_time_points_eval(seconds))
 
         return math.ceil(self.score_parameters.beta * df_points["Points"].sum())
 
