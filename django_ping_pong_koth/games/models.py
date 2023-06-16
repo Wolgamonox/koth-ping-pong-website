@@ -3,14 +3,14 @@ import io
 
 import matplotlib as mpl
 import pandas as pd
-from django.contrib.auth.models import User
+from accounts.models import CustomUser
 from django.db import models
 
 import koth_stats.game_stats as gs
 
 
 class Game(models.Model):
-    players = models.ManyToManyField(User)
+    players = models.ManyToManyField(CustomUser)
     transitions = models.JSONField()
     date = models.DateTimeField(auto_now_add=True, editable=False)
 
@@ -30,8 +30,7 @@ class Game(models.Model):
         transitions_df = pd.DataFrame(
             {
                 "Name": [
-                    User.objects.get(id=transition["player"]).first_name
-                    for transition in instance.transitions
+                    CustomUser.objects.get(id=transition["player"]).first_name for transition in instance.transitions
                 ],
                 "Duration": [transition["duration"] for transition in instance.transitions],
             }

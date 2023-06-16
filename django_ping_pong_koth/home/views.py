@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from accounts.models import CustomUser
 from django.http import HttpResponseNotFound, JsonResponse
 from django.views.decorators.http import require_GET
 from django.views.generic import TemplateView
@@ -26,8 +26,8 @@ def get_player(request):
     query_username = request.GET.get("username", "")
 
     try:
-        user = User.objects.get(username=query_username)
-    except User.DoesNotExist:
+        user = CustomUser.objects.get(username=query_username)
+    except CustomUser.DoesNotExist:
         return HttpResponseNotFound()
 
     json = {
