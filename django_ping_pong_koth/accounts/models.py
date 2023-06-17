@@ -6,5 +6,3 @@ from django.db import models
 class CustomUser(AbstractUser):
     class Meta:
         db_table = "auth_user"
-
-    id = models.AutoField(primary_key=True)
