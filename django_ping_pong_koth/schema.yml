@@ -1,0 +1,7 @@
+openapi: 3.0.3
+info:
+  title: Koth Ping Pong API
+  version: 1.0.0
+  description: Koth Ping Pong API
+paths: {}
+components: {}
