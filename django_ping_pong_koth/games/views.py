@@ -14,6 +14,9 @@ class AllGamesView(ListView):
     context_object_name = "games"
     queryset = Game.objects.filter(valid=True)
 
+    # Temporary hotfix to not fetch all games
+    queryset = queryset[:10]
+
 
 class GameDetailView(DetailView):
     model = Game
