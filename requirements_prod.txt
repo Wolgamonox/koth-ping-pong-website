@@ -1,6 +1,7 @@
 Django==4.0.1
 django-cors-headers==3.13.0
 djangorestframework==3.14.0
+drf-spectacular
 matplotlib==3.5.1
 netifaces==0.11.0
 numpy==1.22.2
