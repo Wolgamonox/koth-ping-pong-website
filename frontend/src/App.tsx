@@ -1,9 +1,10 @@
-import { MantineProvider, Slider, Text } from '@mantine/core';
+import { Box } from '@mantine/core';
+import { ThemeProvider } from './ThemeProvider';
 
 export default function App() {
   return (
-    <MantineProvider withGlobalStyles withNormalizeCSS>
-      <Text>Welcome to Mantine!</Text>
-    </MantineProvider>
+    <ThemeProvider>
+      <Box>Gekki</Box>
+    </ThemeProvider>
   );
 }
