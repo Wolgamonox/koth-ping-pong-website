@@ -1,10 +1,21 @@
-import { Box } from '@mantine/core';
-import { ThemeProvider } from './ThemeProvider';
+import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from "react-router-dom";
+import Home from "./pages/Home";
+import { ThemeProvider } from "./ThemeProvider";
 
-export default function App() {
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route>
+      <Route path="/" element={<Home />} />
+    </Route>
+  )
+);
+
+const App = () => {
   return (
     <ThemeProvider>
-      <Box>Gekki</Box>
+      <RouterProvider router={router} />
     </ThemeProvider>
   );
 }
+
+export default App;
