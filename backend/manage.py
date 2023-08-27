@@ -3,18 +3,18 @@
 import os
 import sys
 
-from django_ping_pong_koth.settings import base
+from config.settings import base
 
 
 def main():
     """Run administrative tasks."""
 
     if base.ENVIRONMENT == "DEV":
-        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_ping_pong_koth.settings.dev")
+        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.dev")
     elif base.ENVIRONMENT == "STAGE":
-        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_ping_pong_koth.settings.stage")
+        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.stage")
     elif base.ENVIRONMENT == "PRODUCTION":
-        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_ping_pong_koth.settings.production")
+        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.production")
     else:
         raise Exception("Incorrect ENVIRONMENT variable: %s" % base.ENVIRONMENT)
 
