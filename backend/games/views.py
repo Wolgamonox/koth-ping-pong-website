@@ -2,18 +2,22 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.views.generic import DetailView, ListView
-from rest_framework import viewsets
+from rest_framework import mixins, viewsets
 from rest_framework.parsers import JSONParser
 
 from .models import Game
 from .serializers import GameSerializer
 
 
-class GamesViewSet(viewsets.ModelViewSet):
+class GamesViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Game.objects.filter(valid=True)
     serializer_class = GameSerializer
 
+    # TODO need to add validation that the players pk in the transitions exist
+    # and that the transitions are not empty
 
+
+# --------------------------------------------
 # OLD API TO BE DELETED
 class AllGamesView(ListView):
     model = Game
@@ -47,3 +51,6 @@ def upload_game(request):
 
 def update_score_parameters(request):
     pass
+
+
+# --------------------------------------------------------------
