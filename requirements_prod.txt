@@ -1,5 +1,6 @@
 Django==4.0.1
 django-cors-headers==3.13.0
+django-filter==23.2
 djangorestframework==3.14.0
 drf-spectacular
 matplotlib==3.5.1
