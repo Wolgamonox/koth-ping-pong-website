@@ -2,10 +2,11 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.views.generic import DetailView, ListView
-from rest_framework import mixins, serializers, status, viewsets
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import mixins, viewsets
 from rest_framework.parsers import JSONParser
-from rest_framework.response import Response
 
+from .filters import GameFilter
 from .models import Game
 from .serializers import GameSerializer
 
@@ -13,26 +14,8 @@ from .serializers import GameSerializer
 class GamesViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Game.objects.filter(valid=True)
     serializer_class = GameSerializer
-
-    def create(self, request, *args, **kwargs):
-        # Serializer validation
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        # Verify if players pk in the transitions match the players of that game
-        players_pks = {player.pk for player in serializer.validated_data["players"]}
-        transitions = serializer.validated_data["transitions"]
-
-        for transition in transitions:
-            if transition["player"] not in players_pks:
-                raise serializers.ValidationError(
-                    detail=f"Invalid player in transitions. pk={transition['player']}", code="does_not_exist"
-                )
-
-        # Finally create the game
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = GameFilter
 
 
 # --------------------------------------------
