@@ -12,4 +12,4 @@ jupyter
 pytest
 black
 flake8
--e git+https://github.com/Wolgamonox/koth-ping-pong-backend.git#egg=koth_stats&subdirectory=koth_stats
+-e git+https://github.com/Wolgamonox/koth-ping-pong-website#egg=koth_stats&subdirectory=koth_stats
