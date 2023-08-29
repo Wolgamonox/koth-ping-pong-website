@@ -1,4 +1,5 @@
 import datetime
+import random
 
 import pytest
 from django.utils import timezone
@@ -59,7 +60,7 @@ class TestGameEndpoints:
         assert response.status_code == 200
         assert response.json()["count"] == 1
 
-    def test_get_single_game(self, game_factory, custom_user_factory, api_client):
+    def test_get_single(self, game_factory, custom_user_factory, api_client):
         # Arrange
         players = [custom_user_factory() for _ in range(3)]
         game_factory.create(players=players)
@@ -72,4 +73,55 @@ class TestGameEndpoints:
         assert response.status_code == 200
         assert len(response.json()["players"]) == 2
 
-    # TODO post test
+    def test_post_complete(self, custom_user_factory, api_client):
+        # Arrange
+        players = [custom_user_factory() for _ in range(3)]
+        players_pks = [player.pk for player in players]
+        transitions = [{"player": player, "duration": random.randint(1, 100)} for player in players_pks]
+
+        data = {"players": players_pks, "transitions": transitions}
+
+        # Act
+        response = api_client().post(self.endpoint, data, format="json")
+
+        # Assert
+        assert response.status_code == 201
+
+    def test_post_empty_players(self, api_client):
+        # Arrange
+        transitions = [{"player": i, "duration": random.randint(1, 100)} for i in range(3)]
+
+        data = {"players": [], "transitions": transitions}
+
+        # Act
+        response = api_client().post(self.endpoint, data, format="json")
+
+        # Assert
+        assert response.status_code == 400
+
+    def test_post_empty_transitions(self, api_client):
+        # Arrange
+        data = {"players": [1, 2], "transitions": []}
+
+        # Act
+        response = api_client().post(self.endpoint, data, format="json")
+
+        # Assert
+        assert response.status_code == 400
+
+    def test_post_transition_with_unkown_player(self, custom_user_factory, api_client):
+        # Arrange
+        players = [custom_user_factory() for _ in range(3)]
+        players_pks = [player.pk for player in players]
+        transitions = [{"player": player, "duration": random.randint(1, 100)} for player in players_pks]
+
+        # faulty transition
+        transitions.append({"player": 99, "duration": 10})
+
+        data = {"players": players_pks, "transitions": transitions}
+
+        # Act
+        response = api_client().post(self.endpoint, data, format="json")
+
+        # Assert
+        assert response.status_code == 400

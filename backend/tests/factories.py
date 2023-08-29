@@ -35,5 +35,5 @@ class GameFactory(factory.django.DjangoModelFactory):
 
         # build the transitions here, havent found a better way
         self.transitions = [
-            {"player": random.choice(self.players.all()).pk, "duration": random.randint(0, 100)} for _ in range(10)
+            {"player": random.choice(self.players.all()).pk, "duration": random.randint(1, 100)} for _ in range(10)
         ]
