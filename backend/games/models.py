@@ -5,6 +5,7 @@ import matplotlib as mpl
 import pandas as pd
 from accounts.models import CustomUser
 from django.db import models
+from django.utils import timezone
 
 import koth_stats.game_stats as gs
 
@@ -12,7 +13,7 @@ import koth_stats.game_stats as gs
 class Game(models.Model):
     players = models.ManyToManyField(CustomUser)
     transitions = models.JSONField()
-    date = models.DateTimeField(auto_now_add=True, editable=False)
+    date = models.DateTimeField(default=timezone.now, editable=False)
 
     valid = models.BooleanField(default=True)
 
