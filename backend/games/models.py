@@ -17,12 +17,11 @@ class Game(models.Model):
 
     valid = models.BooleanField(default=True)
 
-    @property
-    def total_duration(self):
-        return sum([transition["duration"] for transition in self.transitions])
-
     class Meta:
         ordering = ("-date",)
+
+    def __str__(self):
+        return f"Game [{self.pk}]"
 
     @classmethod
     def from_db(cls, db, field_names, values):
@@ -44,9 +43,6 @@ class Game(models.Model):
         instance.koth_service = gs.GameStatService(players_names, transitions_df)
 
         return instance
-
-    def __str__(self):
-        return "Game [%d]" % self.pk
 
     def total_reign_time_plot(self):
         """
