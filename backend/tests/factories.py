@@ -34,6 +34,14 @@ class GameFactory(factory.django.DjangoModelFactory):
         self.players.add(*new_players)
 
         # build the transitions here, havent found a better way
+        duration = None
+        if "transition_duration" in kwargs:
+            duration = kwargs["transition_duration"]
+
         self.transitions = [
-            {"player": random.choice(self.players.all()).pk, "duration": random.randint(1, 100)} for _ in range(10)
+            {
+                "player": random.choice(self.players.all()).pk,
+                "duration": duration if duration else random.randint(1, 100),
+            }
+            for _ in range(10)
         ]

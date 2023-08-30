@@ -17,6 +17,10 @@ class Game(models.Model):
 
     valid = models.BooleanField(default=True)
 
+    @property
+    def total_duration(self):
+        return sum([transition["duration"] for transition in self.transitions])
+
     class Meta:
         ordering = ("-date",)
 
