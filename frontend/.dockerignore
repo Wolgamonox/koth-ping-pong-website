@@ -1,0 +1,9 @@
+.git
+.vscode
+.dockerignore
+.gitignore
+build
+node_modules
+docker-compose.yaml
+Dockerfile
+README.md
