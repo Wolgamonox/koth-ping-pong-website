@@ -1,0 +1,37 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: always
+
+    environment:
+      - POSTGRES_USER=${POSTGRES_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - ./db/psql-init/db.sql:/docker-entrypoint-initdb.d/db.sql
+      - postgres-data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ../backend
+      dockerfile: ../docker/backend/Dockerfile
+      target: dev
+    restart: always
+    container_name: backend
+    depends_on:
+      - db
+    environment:
+      - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - ../backend:/home/web/code
+    ports:
+      - 8000:8000
+
+volumes:
+  postgres-data:
