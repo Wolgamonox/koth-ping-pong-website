@@ -1,6 +1,6 @@
 # Base off the official python image
 # Define a common stage for dev and prod images called base
-FROM python:3.11-alpine as base
+FROM python:3.11 as base
 
 # Set en
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -26,7 +26,7 @@ USER web
 # Create a directory for the source code and use it as base path
 WORKDIR /home/web/code/
 # Copy the python depencencies list for pip
-COPY --chown=web:web ./requirements/base.txt requirements/base.txt
+COPY --chown=web:web ./backend/requirements/base.txt requirements/base.txt
 
 # Switch to the root user temporary, to grant execution permissions.
 USER root
@@ -46,7 +46,7 @@ ENTRYPOINT ["entrypoint.sh"]
 FROM base as dev
 # Install extra packages required in development
 USER root
-COPY --chown=web:web ./requirements/dev.txt requirements/dev.txt
+COPY --chown=web:web ./backend/requirements/dev.txt requirements/dev.txt
 RUN pip install --no-cache-dir -r requirements/dev.txt
 # Copy the scripts that starts the development application server (runserver)
 COPY --chown=web:web ./docker/backend/start-dev-server.sh /usr/local/bin/start-dev-server.sh
@@ -61,13 +61,13 @@ CMD ["start-dev-server.sh"]
 FROM base as prod
 # Install extra packages required in production
 USER root
-COPY --chown=web:web ./requirements/prod.txt requirements/prod.txt
+COPY --chown=web:web ./backend/requirements/prod.txt requirements/prod.txt
 RUN pip install --no-cache-dir -r requirements/prod.txt
 # Copy the script that starts the production application server (gunicorn)
 COPY --chown=web:web ./docker/backend/start-prod-server.sh /usr/local/bin/start-prod-server.sh
 RUN chmod +x /usr/local/bin/start-prod-server.sh
 USER web
 # Copy the source code of our django app to the working directoy
-COPY --chown=web:web . ./
+COPY --chown=web:web ./backend ./
 # The production server starts by default when the container starts
 CMD ["start-prod-server.sh"]
